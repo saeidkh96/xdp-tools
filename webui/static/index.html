@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Real-Time Traffic Monitor</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    /* ---------- Global ---------- */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+        sans-serif;
+    }
+
+    body {
+      min-height: 100vh;
+      background: radial-gradient(circle at top left, #243b55, #141e30 55%, #050811);
+      color: #f5f5f5;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .app-shell {
+      width: 100%;
+      max-width: 1200px;
+      background: rgba(5, 8, 17, 0.85);
+      border-radius: 18px;
+      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.6);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      backdrop-filter: blur(18px);
+      padding: 24px 28px 30px;
+    }
+
+    .app-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .app-title {
+      font-size: 1.4rem;
+      font-weight: 600;
+      letter-spacing: 0.03em;
+      color: #f8f9fa;
+    }
+
+    .app-subtitle {
+      font-size: 0.85rem;
+      color: #9aa4c3;
+      margin-top: 4px;
+    }
+
+    /* ---------- Controls Row ---------- */
+    .controls {
+      display: grid;
+      grid-template-columns: minmax(200px, 1.1fr) minmax(120px, 0.6fr) auto;
+      gap: 16px;
+      margin-bottom: 18px;
+      align-items: end;
+    }
+
+    .control-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      font-size: 0.85rem;
+      color: #c9d3ff;
+    }
+
+    label span.sub-label {
+      font-size: 0.75rem;
+      color: #7c86a6;
+      margin-left: 4px;
+    }
+
+    select,
+    input[type="number"] {
+      background: rgba(17, 27, 56, 0.9);
+      border-radius: 10px;
+      border: 1px solid rgba(117, 137, 189, 0.6);
+      padding: 8px 10px;
+      color: #f1f5ff;
+      font-size: 0.9rem;
+      outline: none;
+      transition: border 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+    }
+
+    select:focus,
+    input[type="number"]:focus {
+      border-color: #ffc107;
+      box-shadow: 0 0 0 1px rgba(255, 193, 7, 0.35);
+      background: rgba(21, 33, 72, 0.95);
+    }
+
+    /* ---------- Button ---------- */
+    .btn-primary {
+      border: none;
+      border-radius: 999px;
+      padding: 10px 22px;
+      background: linear-gradient(135deg, #ffb703, #ff9f1c);
+      color: #030712;
+      font-weight: 600;
+      font-size: 0.92rem;
+      cursor: pointer;
+      box-shadow: 0 10px 30px rgba(255, 159, 28, 0.35);
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      white-space: nowrap;
+      transition: transform 0.12s ease, box-shadow 0.12s ease, filter 0.12s ease;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 14px 40px rgba(255, 159, 28, 0.5);
+      filter: brightness(1.03);
+    }
+
+    .btn-primary:active {
+      transform: translateY(0);
+      box-shadow: 0 6px 18px rgba(255, 159, 28, 0.35);
+    }
+
+    .btn-primary svg {
+      width: 16px;
+      height: 16px;
+    }
+
+    /* ---------- Section Title ---------- */
+    .section-title {
+      font-size: 0.92rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.09em;
+      color: #aeb7df;
+      margin: 18px 0 10px;
+      border-top: 1px solid rgba(255, 255, 255, 0.04);
+      padding-top: 12px;
+    }
+
+    /* ---------- Table ---------- */
+    .table-wrapper {
+      border-radius: 14px;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      background: radial-gradient(
+          circle at top center,
+          rgba(255, 255, 255, 0.03),
+          transparent 60%
+        ),
+        rgba(11, 18, 40, 0.96);
+      overflow: hidden;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.84rem;
+    }
+
+    thead {
+      background: linear-gradient(90deg, #1e293b, #111827);
+    }
+
+    thead th {
+      padding: 10px 12px;
+      font-weight: 600;
+      text-align: left;
+      color: #e2e8f0;
+      border-bottom: 1px solid rgba(148, 163, 184, 0.25);
+      white-space: nowrap;
+    }
+
+    tbody tr {
+      border-bottom: 1px solid rgba(148, 163, 184, 0.13);
+      transition: background 0.12s ease;
+    }
+
+    tbody tr:nth-child(even) {
+      background: rgba(15, 23, 42, 0.9);
+    }
+
+    tbody tr:nth-child(odd) {
+      background: rgba(10, 16, 32, 0.9);
+    }
+
+    tbody tr:hover {
+      background: rgba(55, 65, 81, 0.7);
+    }
+
+    tbody td {
+      padding: 9px 12px;
+      color: #e5e7eb;
+    }
+
+    .cell-ip {
+      font-family: "JetBrains Mono", "Fira Code", monospace;
+      font-size: 0.8rem;
+      color: #cbd5f5;
+    }
+
+    .cell-port {
+      font-family: "JetBrains Mono", "Fira Code", monospace;
+      font-size: 0.8rem;
+      color: #fbbf24;
+    }
+
+    .cell-timestamp {
+      color: #c4c9e9;
+      font-size: 0.8rem;
+    }
+
+    .badge {
+      border-radius: 999px;
+      padding: 3px 10px;
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+    }
+
+    .badge-normal {
+      background: rgba(16, 185, 129, 0.12);
+      color: #6ee7b7;
+      border: 1px solid rgba(16, 185, 129, 0.6);
+    }
+
+    .badge-malicious {
+      background: rgba(239, 68, 68, 0.12);
+      color: #fecaca;
+      border: 1px solid rgba(248, 113, 113, 0.7);
+    }
+
+    .table-footer {
+      padding: 8px 12px 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.75rem;
+      color: #9ca3af;
+    }
+
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+      display: inline-block;
+      margin-right: 6px;
+    }
+
+    .dot-live {
+      background: #22c55e;
+      box-shadow: 0 0 0 5px rgba(34, 197, 94, 0.2);
+    }
+
+    .dot-paused {
+      background: #f97316;
+      box-shadow: 0 0 0 5px rgba(249, 115, 22, 0.18);
+    }
+
+    @media (max-width: 768px) {
+      .app-shell {
+        padding: 18px 16px 22px;
+      }
+      .controls {
+        grid-template-columns: 1fr;
+      }
+      thead th:nth-child(2),
+      thead th:nth-child(4),
+      tbody td:nth-child(2),
+      tbody td:nth-child(4) {
+        display: none; /* hide src/dst port on very small screens */
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-shell">
+    <header class="app-header">
+      <div>
+        <div class="app-title">Real-Time Traffic Monitor</div>
+        <div class="app-subtitle">
+          Select an interface and timespan, then start live packet capture.
+        </div>
+      </div>
+    </header>
+
+    <!-- Controls -->
+    <div class="controls">
+      <div class="control-group">
+        <label for="interfaceSelect">
+          Available Local Interfaces
+          <span class="sub-label">(auto-discovered)</span>
+        </label>
+        <select id="interfaceSelect">
+          <!-- این گزینه‌ها رو بعداً می‌تونی داینامیک از backend بگیری -->
+          <option value="enp2s0">enp2s0</option>
+          <option value="wlp4s0">wlp4s0</option>
+          <option value="lo">lo (loopback)</option>
+        </select>
+      </div>
+
+      <div class="control-group">
+        <label for="timespanInput">
+          Enter Timespan
+          <span class="sub-label">(seconds)</span>
+        </label>
+        <input
+          id="timespanInput"
+          type="number"
+          min="1"
+          step="1"
+          placeholder="4"
+          value="4"
+        />
+      </div>
+
+      <div class="control-group">
+        <button id="captureBtn" class="btn-primary">
+          <svg viewBox="0 0 24 24" fill="none">
+            <path
+              d="M8 5v14l11-7L8 5z"
+              fill="currentColor"
+            />
+          </svg>
+          Start Packet Capture
+        </button>
+      </div>
+    </div>
+
+    <!-- Algorithm Output -->
+    <div class="section-title">Algorithm Output</div>
+
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th>Src IP</th>
+            <th>Src Port</th>
+            <th>Dst IP</th>
+            <th>Dst Port</th>
+            <th>Timestamp</th>
+            <th>Result</th>
+          </tr>
+        </thead>
+        <tbody id="resultsBody">
+          <!-- Rows will be injected from backend -->
+        </tbody>
+      </table>
+      <div class="table-footer">
+        <div>
+          <span class="dot dot-paused"></span>
+          <span id="statusText">Idle – waiting to start capture</span>
+        </div>
+        <div id="rowCount">0 flows</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const captureBtn = document.getElementById("captureBtn");
+    const resultsBody = document.getElementById("resultsBody");
+    const statusText = document.getElementById("statusText");
+    const rowCount = document.getElementById("rowCount");
+    const ifaceSelect = document.getElementById("interfaceSelect");
+    const timespanInput = document.getElementById("timespanInput");
+
+    function addRow(flow) {
+      const tr = document.createElement("tr");
+
+      const resultText = flow.Prediction || flow.result || "UNKNOWN";
+
+      tr.innerHTML = `
+        <td class="cell-ip">${flow.src_ip || flow.srcIp || "-"}</td>
+        <td class="cell-port">${flow.src_port ?? flow.srcPort ?? "-"}</td>
+        <td class="cell-ip">${flow.dst_ip || flow.dstIp || "-"}</td>
+        <td class="cell-port">${flow.dst_port ?? flow.dstPort ?? "-"}</td>
+        <td class="cell-timestamp">${flow.timestamp || flow.ts || "-"}</td>
+        <td>
+          <span class="badge ${
+            resultText.toLowerCase() === "malicious"
+              ? "badge-malicious"
+              : "badge-normal"
+          }">
+            ${resultText}
+          </span>
+        </td>
+      `;
+
+      // آخرین فلو بالا بیاد
+      resultsBody.prepend(tr);
+    }
+
+    async function loadFlows() {
+      const res = await fetch("/api/flows");
+      if (!res.ok) {
+        console.error("Failed to load flows");
+        return;
+      }
+      const data = await res.json();
+
+      resultsBody.innerHTML = "";
+      data.forEach(addRow);
+      rowCount.textContent = `${resultsBody.rows.length} flows`;
+    }
+
+    captureBtn.addEventListener("click", async () => {
+      const iface = ifaceSelect.value;
+      const ts = parseInt(timespanInput.value, 10) || 4;
+
+      statusText.textContent = `Capturing on ${iface} for ~${ts}s ...`;
+      statusText.previousElementSibling.className = "dot dot-live";
+      captureBtn.disabled = true;
+
+      try {
+        const res = await fetch("/api/start_capture", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ interface: iface, timespan: ts }),
+        });
+
+        if (!res.ok) {
+          throw new Error("Capture API error");
+        }
+
+        const data = await res.json();
+        console.log("Capture done:", data);
+
+        statusText.textContent = `Done – ${data.flows} flows processed in ${data.elapsed_sec}s`;
+        statusText.previousElementSibling.className = "dot dot-paused";
+
+        await loadFlows();
+      } catch (e) {
+        console.error(e);
+        statusText.textContent = "Error during capture/classification";
+        statusText.previousElementSibling.className = "dot dot-paused";
+      } finally {
+        captureBtn.disabled = false;
+      }
+    });
+
+    // اگر دوست داشتی، می‌تونی این رو فعال کنی تا هر چند ثانیه یه‌بار فلوها آپدیت شن:
+    // setInterval(loadFlows, 5000);
+  </script>
+</body>
+</html>

@@ -1,0 +1,33 @@
+Selected features:
+- Destination Port
+- Total Length of Fwd Packets
+- Fwd Packet Length Max
+- Fwd Packet Length Mean
+- Bwd Packet Length Max
+- Bwd Packet Length Min
+- Bwd Packet Length Mean
+- Bwd Packet Length Std
+- Bwd IAT Total
+- Min Packet Length
+- Max Packet Length
+- Packet Length Mean
+- Packet Length Std
+- Packet Length Variance
+- URG Flag Count
+- Average Packet Size
+- Avg Fwd Segment Size
+- Avg Bwd Segment Size
+- Subflow Fwd Bytes
+- min_seg_size_forward
+
+Accuracies:
+dt: 0.9995
+gb: 0.9994
+knn: 0.9994
+ada: 0.9993
+mlp: 0.9938
+gnb: 0.9812
+rnn: 0.9762
+cnn: 0.9706
+lr: 0.9685
+lstm: 0.9560

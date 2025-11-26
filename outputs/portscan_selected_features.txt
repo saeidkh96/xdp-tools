@@ -1,0 +1,20 @@
+Flow Duration
+Fwd Packet Length Max
+Fwd Packet Length Min
+Fwd Packet Length Mean
+Bwd Packet Length Max
+Bwd Packet Length Min
+Bwd Packet Length Mean
+Bwd Packet Length Std
+Min Packet Length
+Max Packet Length
+Packet Length Mean
+Packet Length Std
+PSH Flag Count
+ACK Flag Count
+Down/Up Ratio
+Average Packet Size
+Avg Fwd Segment Size
+Avg Bwd Segment Size
+Init_Win_bytes_forward
+min_seg_size_forward

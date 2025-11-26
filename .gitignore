@@ -1,0 +1,104 @@
+############################################################
+# XDP-TOOLS OFFICIAL .gitignore (Optimized by ChatGPT)
+# For: XDP + BPF + CICFlowMeter + Python ML Pipeline
+############################################################
+
+###############################
+# Python
+###############################
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.log
+
+# Virtual environments
+venv/
+*/venv/
+
+# Jupyter & temporary
+.ipynb_checkpoints/
+
+###############################
+# CICFlowMeter
+###############################
+uv.lock
+*.csv
+*.pcap
+*.pcap.lz4
+
+###############################
+# BPF / XDP Build Artifacts
+###############################
+*.o
+*.so
+*.so.*
+*.a
+*.lo
+*.la
+*.elf
+*.ko
+*.mod
+*.mod.*
+*.cmd
+.tmp_versions/
+modules.order
+Module.symvers
+Mkfile.old
+
+###############################
+# Build System & Compiler Outputs
+###############################
+*.d
+*.ll
+*.gch
+*.pch
+*.obj
+*.exe
+*.out
+*.app
+*.hex
+*.exp
+*.ilk
+
+# Clang / C tooling
+.ccls-cache/
+.clangd/
+.cache/
+compile_commands.json
+
+###############################
+# Dispatcher & Generated Files
+###############################
+xdp-dispatcher.c
+*.skel.h
+
+###############################
+# Archives
+###############################
+*.tar.gz
+*.tar
+*.zip
+*.7z
+*.rar
+*.rpm
+*.deb
+
+###############################
+# OS / Editor ignores
+###############################
+.DS_Store
+Thumbs.db
+
+.vscode/
+.idea/
+
+###############################
+# Git submodule configs (you removed them)
+###############################
+.gitmodules
+config.mk
+
+############################################################
+# End of optimized .gitignore
+############################################################
